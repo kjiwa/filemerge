@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DIRECTORY=""
+DIRECTORY="."
 OUTPUT_FILE=""
 EXTENSIONS=()
 EXCLUDES=()
@@ -20,14 +20,14 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 usage() {
-  echo "Usage: $0 -d <directory> -o <output_file> [-e <ext>] [-x <path>]"
+  echo "Usage: $0 -o <output_file> [-d <directory>] [-e <ext>] [-x <path>]"
   echo ""
   echo "  Combines the contents of files with specified extensions into a single output file."
   echo "  The full relative path of each file will precede its content."
   echo ""
   echo "  Arguments:"
-  echo "    -d, --directory <DIR>       The starting directory for the search (Mandatory)."
   echo "    -o, --output <FILE>         The file to write the combined content to (Mandatory)."
+  echo "    -d, --directory <DIR>       The starting directory for the search (Optional, defaults to current directory)."
   echo "    -e, --extension <EXT>       File extension to include (e.g., 'sh', 'txt'). Can be specified multiple times."
   echo "    -x, --exclude <PATH>        Path or directory to exclude from the search. Can be specified multiple times."
   echo "    -h, --help                  Display this help message."
@@ -80,8 +80,8 @@ parse_args() {
 }
 
 validate_args() {
-  if [[ -z "$DIRECTORY" || -z "$OUTPUT_FILE" ]]; then
-    echo "Error: Both the directory (-d) and output file (-o) must be specified." >&2
+  if [[ -z "$OUTPUT_FILE" ]]; then
+    echo "Error: The output file (-o) must be specified." >&2
     usage
   fi
 

@@ -5,13 +5,13 @@ A Bash utility that combines multiple files into a single output file, with each
 ## Usage
 
 ```bash
-./filemerge.sh -d <directory> -o <output_file> [-e <ext>] [-x <path>]
+./filemerge.sh -o <output_file> [-d <directory>] [-e <ext>] [-x <path>]
 ```
 
 ## Options
 
-- `-d, --directory <DIR>` - Starting directory for file search (required)
 - `-o, --output <FILE>` - Output file path (required)
+- `-d, --directory <DIR>` - Starting directory for file search (optional, defaults to current directory)
 - `-e, --extension <EXT>` - File extension to include (repeatable)
 - `-x, --exclude <PATH>` - Path or directory to exclude (repeatable)
 - `-h, --help` - Display help message
@@ -20,7 +20,12 @@ A Bash utility that combines multiple files into a single output file, with each
 
 Combine all shell scripts in the current directory:
 ```bash
-./filemerge.sh -d . -o combined.txt -e sh
+./filemerge.sh -o combined.txt -e sh
+```
+
+Combine all files in a specific directory:
+```bash
+./filemerge.sh -d ./src -o output.txt
 ```
 
 Combine multiple file types:
@@ -30,12 +35,12 @@ Combine multiple file types:
 
 Exclude specific directories:
 ```bash
-./filemerge.sh -d ./project -o merged.txt -e py -x node_modules -x .git
+./filemerge.sh -o merged.txt -e py -x node_modules -x .git
 ```
 
 Combine all files (no extension filter):
 ```bash
-./filemerge.sh -d ./docs -o all_docs.txt
+./filemerge.sh -o all_docs.txt
 ```
 
 ## Output Format
