@@ -1,6 +1,6 @@
 # filemerge.sh
 
-A Bash utility that combines multiple files into a single output file, with each file's content preceded by its relative path.
+A POSIX-compliant shell utility that combines multiple files into a single output file, with each file's content preceded by its relative path.
 
 ## Usage
 
@@ -10,11 +10,11 @@ A Bash utility that combines multiple files into a single output file, with each
 
 ## Options
 
-- `-o, --output <FILE>` - Output file path (required)
-- `-d, --directory <DIR>` - Starting directory for file search (optional, defaults to current directory)
-- `-e, --extension <EXT>` - File extension to include (repeatable)
-- `-x, --exclude <PATH>` - Path or directory to exclude (repeatable)
-- `-h, --help` - Display help message
+- `-o <FILE>` - Output file path (required)
+- `-d <DIR>` - Starting directory for file search (optional, defaults to current directory)
+- `-e <EXT>` - File extension to include (repeatable)
+- `-x <PATH>` - Path or directory to exclude (repeatable)
+- `-h` - Display help message
 
 ## Examples
 
@@ -56,8 +56,8 @@ Each file's content is formatted as:
 
 ## Requirements
 
-- Bash 4.0+
-- Standard Unix utilities (find, cat, wc, getopt)
+- POSIX-compliant shell (sh)
+- Standard Unix utilities (find, cat, wc, mktemp)
 
 ## Error Handling
 
