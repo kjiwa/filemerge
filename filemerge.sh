@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# File Combiner Script
-# Combines the content of files with specified extensions from a target directory,
-# excluding specified paths, into a single output file.
-
 set -euo pipefail
 
 DIRECTORY=""
