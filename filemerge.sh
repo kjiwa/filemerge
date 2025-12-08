@@ -1,49 +1,74 @@
 #!/bin/sh
 
+# MIT License
+#
+# Copyright (c) 2025 Kamil Jiwa
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 set -eu
 
 DIRECTORY="."
 OUTPUT_FILE=""
 EXTENSIONS=""
 EXCLUDES=""
+TEMP_FILE=""
 
-TEMP_FILE=$(mktemp) || {
-  echo "Error: Failed to create temporary file." >&2
-  exit 1
+create_temp_file() {
+  TEMP_FILE="${TMPDIR:-/tmp}/filemerge.$$"
+  : >"$TEMP_FILE" || {
+    echo "Error: Failed to create temporary file." >&2
+    exit 1
+  }
 }
 
 cleanup() {
-  if [ -f "$TEMP_FILE" ]; then
+  if [ -n "${TEMP_FILE:-}" ] && [ -f "$TEMP_FILE" ]; then
     rm -f "$TEMP_FILE"
   fi
 }
+
 trap cleanup EXIT INT TERM
 
 usage() {
-  echo "Usage: $0 -o <output_file> [-d <directory>] [-e <ext>] [-x <path>]"
-  echo ""
-  echo "  Combines the contents of files with specified extensions into a single output file."
-  echo "  The full relative path of each file will precede its content."
-  echo ""
-  echo "  Arguments:"
-  echo "    -o <FILE>         The file to write the combined content to (Mandatory)."
-  echo "    -d <DIR>          The starting directory for the search (Optional, defaults to current directory)."
-  echo "    -e <EXT>          File extension to include (e.g., 'sh', 'txt'). Can be specified multiple times."
-  echo "    -x <PATH>         Path or directory to exclude from the search. Can be specified multiple times."
-  echo "    -h                Display this help message."
-  echo ""
+  cat <<EOF
+Usage: $0 -o <output_file> [-d <directory>] [-e <ext>] [-x <path>]
+
+  Combines the contents of files with specified extensions into a single output file.
+  The full relative path of each file will precede its content.
+
+  Arguments:
+    -o <FILE>         The file to write the combined content to (Mandatory).
+    -d <DIR>          The starting directory for the search (Optional, defaults to current directory).
+    -e <EXT>          File extension to include (e.g., 'sh', 'txt'). Can be specified multiple times.
+    -x <PATH>         Path or directory to exclude from the search. Can be specified multiple times.
+    -h                Display this help message.
+
+EOF
   exit 1
 }
 
 parse_args() {
   while getopts "d:o:e:x:h" opt; do
     case "$opt" in
-    d)
-      DIRECTORY="$OPTARG"
-      ;;
-    o)
-      OUTPUT_FILE="$OPTARG"
-      ;;
+    d) DIRECTORY="$OPTARG" ;;
+    o) OUTPUT_FILE="$OPTARG" ;;
     e)
       if [ -z "$EXTENSIONS" ]; then
         EXTENSIONS="$OPTARG"
@@ -58,12 +83,8 @@ parse_args() {
         EXCLUDES="$EXCLUDES $OPTARG"
       fi
       ;;
-    h)
-      usage
-      ;;
-    *)
-      usage
-      ;;
+    h) usage ;;
+    *) usage ;;
     esac
   done
 }
@@ -80,9 +101,7 @@ validate_args() {
   fi
 }
 
-find_files() {
-  echo "Searching for files in '$DIRECTORY'..."
-
+build_find_command() {
   find_cmd="find '$DIRECTORY'"
 
   if [ -n "$EXCLUDES" ]; then
@@ -106,6 +125,13 @@ find_files() {
   fi
 
   find_cmd="$find_cmd -type f -print"
+  echo "$find_cmd"
+}
+
+find_files() {
+  echo "Searching for files in '$DIRECTORY'..."
+
+  find_cmd=$(build_find_command)
 
   if ! eval "$find_cmd" >"$TEMP_FILE"; then
     echo "Error: The find command failed to execute." >&2
@@ -137,6 +163,7 @@ combine_contents() {
 }
 
 main() {
+  create_temp_file
   parse_args "$@"
   validate_args
   find_files
