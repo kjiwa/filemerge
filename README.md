@@ -8,13 +8,39 @@ A POSIX-compliant shell utility that combines multiple files into a single outpu
 ./filemerge.sh -o <output_file> [-d <directory>] [-e <ext>] [-x <path>]
 ```
 
-## Options
+### Options
 
 - `-o <FILE>` - Output file path (required)
 - `-d <DIR>` - Starting directory for file search (optional, defaults to current directory)
 - `-e <EXT>` - File extension to include (repeatable)
 - `-x <PATH>` - Path or directory to exclude (repeatable)
 - `-h` - Display help message
+
+## Requirements
+
+- POSIX-compliant shell (sh)
+- Standard Unix utilities (find, cat, wc, mktemp)
+
+## Output Format
+
+Each file's content is formatted as:
+
+```
+--- FILE: path/to/file.ext ---
+[file content]
+
+
+```
+
+## Error Handling
+
+The script will exit with an error if:
+- Required arguments are missing
+- The specified directory does not exist
+- Temporary file creation fails
+- The find command fails
+
+Warnings are issued for individual files that cannot be read, but execution continues.
 
 ## Examples
 
@@ -41,41 +67,4 @@ Exclude specific directories:
 Combine all files (no extension filter):
 ```bash
 ./filemerge.sh -o all_docs.txt
-```
-
-## Output Format
-
-Each file's content is formatted as:
-
-```
---- FILE: path/to/file.ext ---
-[file content]
-
-
-```
-
-## Requirements
-
-- POSIX-compliant shell (sh)
-- Standard Unix utilities (find, cat, wc, mktemp)
-
-## Error Handling
-
-The script will exit with an error if:
-- Required arguments are missing
-- The specified directory does not exist
-- Temporary file creation fails
-- The find command fails
-
-Warnings are issued for individual files that cannot be read, but execution continues.
-
-## Installation
-
-```bash
-chmod +x filemerge.sh
-```
-
-Optionally, move to a directory in your PATH:
-```bash
-sudo mv filemerge.sh /usr/local/bin/filemerge
 ```
