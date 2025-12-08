@@ -28,8 +28,6 @@ Each file's content is formatted as:
 ```
 --- FILE: path/to/file.ext ---
 [file content]
-
-
 ```
 
 ## Error Handling
